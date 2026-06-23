@@ -93,6 +93,8 @@ powershell -ExecutionPolicy Bypass -File .\Test-CodexMonitor.ps1 -SendNotificati
 - `.github/`: issue and PR templates
 - `LICENSE`: MIT
 
+Release steps live in [docs/release-checklist.md](C:/Users/ASD/Documents/Codex/2026-06-23/you/docs/release-checklist.md).
+
 ## Notes
 
 - Local config files are ignored by `.gitignore` so your Bark device URL does not get committed by default.
