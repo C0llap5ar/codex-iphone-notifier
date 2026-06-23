@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex iPhone Notifier Quickstart</title>
+  <style>
+    :root {
+      --bg: #f5efe4;
+      --paper: #fff9f0;
+      --ink: #1d2a22;
+      --muted: #5b675f;
+      --accent: #c45b2f;
+      --line: rgba(103, 79, 46, 0.16);
+      --shadow: 0 28px 60px rgba(73, 56, 31, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(196, 91, 47, 0.18), transparent 22%),
+        linear-gradient(180deg, #f9f4ea 0%, var(--bg) 100%);
+    }
+
+    .wrap {
+      width: 100%;
+      height: 100%;
+      padding: 54px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+    }
+
+    .hero,
+    .code {
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: rgba(255, 249, 240, 0.92);
+    }
+
+    .hero {
+      padding: 42px 40px;
+    }
+
+    .eyebrow {
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 18px 0 0;
+      font-size: 66px;
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .lede {
+      margin-top: 22px;
+      font-size: 24px;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    .steps {
+      margin-top: 34px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .step {
+      padding: 16px 18px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .step strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .step span {
+      display: block;
+      margin-top: 6px;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .code {
+      padding: 30px;
+      background: linear-gradient(180deg, #faf4ea, #f4e9d8);
+    }
+
+    .terminal-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d8b48f;
+    }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      min-height: 100%;
+      border-radius: 24px;
+      background: #1f2520;
+      color: #e6eedf;
+      font-size: 24px;
+      line-height: 1.65;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .accent {
+      color: #ffb684;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Quick Start</div>
+      <h1>From local Codex task to iPhone push.</h1>
+      <div class="lede">Three commands to set up Bark, start the monitor, and open the dashboard.</div>
+      <div class="steps">
+        <div class="step">
+          <strong>1. Configure Bark</strong>
+          <span>Generate local config with your Bark device URL.</span>
+        </div>
+        <div class="step">
+          <strong>2. Start the monitor</strong>
+          <span>Watch local Codex `task_complete` events in the background.</span>
+        </div>
+        <div class="step">
+          <strong>3. Open the dashboard</strong>
+          <span>See status, recent logs, today count, and send a test notification.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="code">
+      <div class="terminal-bar">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <pre><span class="accent">powershell -ExecutionPolicy Bypass -File .\Setup-CodexMonitor.ps1 -BarkUrl "https://api.day.app/your-device-key/"</span>
+
+powershell -ExecutionPolicy Bypass -File .\outputs\codex-task-monitor\Start-CodexTaskMonitor.ps1
+
+powershell -ExecutionPolicy Bypass -File .\outputs\codex-task-monitor\Start-CodexTaskMonitorDashboard.ps1</pre>
+    </section>
+  </div>
+</body>
+</html>

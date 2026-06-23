@@ -84,6 +84,12 @@ Recommended screenshots for the README and release page:
 3. Quick start snippet
    Show the `Setup-CodexMonitor.ps1` and `Test-CodexMonitor.ps1` flow in the terminal.
 
+Prebuilt assets in this repo:
+
+- `docs/assets/dashboard-preview.png`
+- `docs/assets/quickstart-card.png`
+- `docs/assets/social-preview.png`
+
 ## 7. Optional repo polish
 
 - Add a social preview image in GitHub settings

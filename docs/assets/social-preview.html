@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex iPhone Notifier Social Preview</title>
+  <style>
+    :root {
+      --bg-1: #f6efdf;
+      --bg-2: #efe1cb;
+      --ink: #1d2a22;
+      --muted: #56655d;
+      --accent: #c45b2f;
+      --green: #2f7d4a;
+      --panel: rgba(255, 250, 242, 0.9);
+      --line: rgba(109, 86, 53, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(196, 91, 47, 0.20), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(47, 125, 74, 0.18), transparent 28%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 48px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      height: 100%;
+    }
+
+    .hero,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: 0 24px 60px rgba(79, 56, 29, 0.10);
+      backdrop-filter: blur(6px);
+    }
+
+    .hero {
+      padding: 38px 38px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .eyebrow {
+      font-size: 16px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 68px;
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+    }
+
+    .lede {
+      margin-top: 20px;
+      max-width: 560px;
+      font-size: 24px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 15px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 42px;
+      font-weight: 700;
+    }
+
+    .sub {
+      margin-top: 8px;
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .mini-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+    }
+
+    .mini-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .mini-value {
+      margin-top: 8px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .phone {
+      position: absolute;
+      right: 64px;
+      bottom: 46px;
+      width: 278px;
+      padding: 12px;
+      border-radius: 34px;
+      background: #1f261f;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.20);
+      transform: rotate(-7deg);
+    }
+
+    .screen {
+      border-radius: 24px;
+      padding: 22px 18px 20px;
+      background: linear-gradient(180deg, #f7f1e7, #efe3cf);
+    }
+
+    .banner {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    .notify-title {
+      margin-top: 16px;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .notify-body {
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="grid">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Codex iPhone Notifier</div>
+          <h1>Reliable task-done push for Codex Desktop.</h1>
+          <div class="lede">Watch local Codex session logs on Windows, forward task completion events to Bark on iPhone, and verify everything with a lightweight dashboard.</div>
+          <div class="chips">
+            <div class="chip">Windows-first</div>
+            <div class="chip">Bark on iPhone</div>
+            <div class="chip">Local dashboard</div>
+            <div class="chip">No flaky hook dependency</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack">
+        <div class="panel">
+          <div class="panel-title">Monitor</div>
+          <div class="status">Running</div>
+          <div class="sub">Watching local `task_complete` events and pushing to Bark.</div>
+          <div class="mini-grid">
+            <div class="mini">
+              <div class="mini-label">Completed Today</div>
+              <div class="mini-value">55</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Notifications Sent</div>
+              <div class="mini-value">31</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Why this path</div>
+          <div class="sub">A practical fallback when Desktop notification hooks are unreliable. Small enough to understand, local enough to debug.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="phone">
+      <div class="screen">
+        <div class="banner">Bark notification</div>
+        <div class="notify-title">已完成任务</div>
+        <div class="notify-body">Codex finished the task and your phone got the push without keeping the app in front of you.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -8,6 +8,12 @@ This repository is currently optimized for a practical Windows-first public rele
 
 If you want Codex to finish a task and immediately ping your phone, this project is the simplest reliable path from local Codex Desktop activity to iPhone push notifications.
 
+## Preview
+
+![Dashboard preview](docs/assets/dashboard-preview.png)
+
+![Quick start](docs/assets/quickstart-card.png)
+
 ## What it does
 
 - Watches `~/.codex/sessions` for new `task_complete` events
@@ -102,3 +108,4 @@ Release steps live in [docs/release-checklist.md](C:/Users/ASD/Documents/Codex/2
 - If Bark send fails once, the monitor now logs the failure and keeps running instead of dying.
 - The local dashboard now includes a test notification button and a "completed today" counter.
 - The current `outputs/` folder layout is intentionally preserved in `0.1.x` to avoid breaking a working setup before the first public release.
+- A ready-to-upload GitHub social preview image is available at `docs/assets/social-preview.png`.
