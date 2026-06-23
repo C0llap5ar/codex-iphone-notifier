@@ -89,23 +89,3 @@ Run a health check and send a real Bark test:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\Test-CodexMonitor.ps1 -SendNotification -StartDashboard
 ```
-
-## Public repo checklist
-
-- `README.md`: overview and setup
-- `CHANGELOG.md`: release history
-- `CONTRIBUTING.md`: contribution guide
-- `SECURITY.md`: secret-handling expectations
-- `.github/`: issue and PR templates
-- `LICENSE`: MIT
-
-Release steps live in [docs/release-checklist.md](C:/Users/ASD/Documents/Codex/2026-06-23/you/docs/release-checklist.md).
-
-## Notes
-
-- Local config files are ignored by `.gitignore` so your Bark device URL does not get committed by default.
-- Runtime files like `state.json`, `status.json`, `*.pid`, and `monitor.log` are also ignored.
-- If Bark send fails once, the monitor now logs the failure and keeps running instead of dying.
-- The local dashboard now includes a test notification button and a "completed today" counter.
-- The current `outputs/` folder layout is intentionally preserved in `0.1.x` to avoid breaking a working setup before the first public release.
-- A ready-to-upload GitHub social preview image is available at `docs/assets/social-preview.png`.
