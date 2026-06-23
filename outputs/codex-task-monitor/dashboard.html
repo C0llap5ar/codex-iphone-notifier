@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex Task Monitor</title>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --panel: #fffaf1;
+      --ink: #1d2a22;
+      --muted: #5f6b63;
+      --accent: #c95f2d;
+      --ok: #2f7d4a;
+      --warn: #9f4b27;
+      --border: #d9cdbd;
+      --shadow: 0 18px 40px rgba(71, 53, 31, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(201,95,45,0.16), transparent 28%),
+        linear-gradient(180deg, #f7f1e7 0%, var(--bg) 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .hero {
+      padding: 18px 4px 22px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 0.98;
+      font-weight: 700;
+    }
+
+    .sub {
+      margin-top: 14px;
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      padding: 18px 18px 16px;
+      min-height: 142px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .value {
+      margin-top: 14px;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 700;
+      line-height: 1.05;
+      word-break: break-word;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      background: rgba(47,125,74,0.08);
+      color: var(--ok);
+    }
+
+    .pill.warn {
+      background: rgba(159,75,39,0.10);
+      color: var(--warn);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .log-panel,
+    .detail-panel {
+      padding: 20px;
+    }
+
+    .log-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .log-title,
+    .detail-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .detail-list {
+      margin-top: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff8ec 0%, #f5e8d8 100%);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+      box-shadow: 0 10px 22px rgba(71, 53, 31, 0.08);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.7;
+      transform: none;
+    }
+
+    .detail-row {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .detail-value {
+      margin-top: 8px;
+      font-size: 16px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    pre {
+      margin: 18px 0 0;
+      padding: 16px;
+      background: #f7f1e8;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: auto;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #304137;
+      min-height: 240px;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 860px) {
+      .split {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Codex Local Monitor</div>
+      <h1>&#20219;&#21153;&#23436;&#25104;&#25552;&#37266;&#38754;&#26495;</h1>
+      <div class="sub">&#26412;&#22320;&#30417;&#35270;&#22120;&#20250;&#33258;&#21160;&#21047;&#26032;&#29366;&#24577;&#65292;&#29992;&#26469;&#30830;&#35748; Bark &#25552;&#37266;&#38142;&#36335;&#26159;&#21542;&#22312;&#27491;&#24120;&#24037;&#20316;&#65292;&#20197;&#21450;&#26368;&#36817;&#30340;&#23436;&#25104;&#20107;&#20214;&#26377;&#27809;&#26377;&#34987;&#25429;&#25417;&#21040;&#12290;</div>
+    </section>
+
+    <section class="grid">
+      <article class="panel stat">
+        <div class="label">Monitor Status</div>
+        <div class="value" id="runningText">Loading...</div>
+        <div class="pill" id="runningPill"><span class="dot"></span><span id="runningPillText">Checking</span></div>
+      </article>
+
+      <article class="panel stat">
+        <div class="label">Monitor PID</div>
+        <div class="value" id="pidText">-</div>
+      </article>
+
+      <article class="panel stat">
+        <div class="label">Last Completed At</div>
+        <div class="value" id="completedText">-</div>
+      </article>
+
+      <article class="panel stat">
+        <div class="label">Snapshot Time</div>
+        <div class="value" id="generatedText">-</div>
+      </article>
+
+      <article class="panel stat">
+        <div class="label">Notifications Sent</div>
+        <div class="value" id="countText">-</div>
+      </article>
+
+      <article class="panel stat">
+        <div class="label">Completed Today</div>
+        <div class="value" id="todayCountText">-</div>
+      </article>
+    </section>
+
+    <section class="split">
+      <section class="panel log-panel">
+        <div class="log-head">
+          <div class="log-title">Recent Log</div>
+          <div class="meta" id="metaText">Auto refresh every 3 seconds</div>
+        </div>
+        <pre id="logText">Loading...</pre>
+        <div class="footer">Data source: local <code>status.json</code> snapshot exported from the monitor folder.</div>
+      </section>
+
+      <section class="panel detail-panel">
+        <div class="detail-title">Quick Detail</div>
+        <div class="detail-list">
+          <div class="detail-row">
+            <div class="detail-label">Last Turn ID</div>
+            <div class="detail-value" id="turnText">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Monitor Started</div>
+            <div class="detail-value" id="startedText">-</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Refresh Status</div>
+            <div class="detail-value" id="refreshText">Waiting for first refresh...</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="testButton" type="button">Send Test Notification</button>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const runningText = document.getElementById("runningText");
+    const runningPill = document.getElementById("runningPill");
+    const runningPillText = document.getElementById("runningPillText");
+    const pidText = document.getElementById("pidText");
+    const completedText = document.getElementById("completedText");
+    const generatedText = document.getElementById("generatedText");
+    const countText = document.getElementById("countText");
+    const todayCountText = document.getElementById("todayCountText");
+    const turnText = document.getElementById("turnText");
+    const startedText = document.getElementById("startedText");
+    const refreshText = document.getElementById("refreshText");
+    const logText = document.getElementById("logText");
+    const metaText = document.getElementById("metaText");
+    const testButton = document.getElementById("testButton");
+
+    function formatEpochSeconds(value) {
+      if (!value && value !== 0) {
+        return "-";
+      }
+
+      const date = new Date(Number(value) * 1000);
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return date.toLocaleString("zh-CN", { hour12: false });
+    }
+
+    async function refresh() {
+      const refreshedAt = new Date();
+
+      try {
+        const response = await fetch(`status.json?ts=${Date.now()}`, { cache: "no-store" });
+        const data = await response.json();
+
+        runningText.textContent = data.running ? "Running" : "Stopped";
+        runningPillText.textContent = data.running ? "Watching session logs" : "Monitor is not active";
+        runningPill.className = data.running ? "pill" : "pill warn";
+
+        pidText.textContent = data.pid || "-";
+        completedText.textContent = formatEpochSeconds(data.lastSeenCompletedAt);
+        generatedText.textContent = data.generatedAt || "-";
+        countText.textContent = data.notifiedCount ?? "-";
+        todayCountText.textContent = data.todayCompletedCount ?? "-";
+        turnText.textContent = data.lastNotifiedTurnId || "-";
+        startedText.textContent = formatEpochSeconds(data.startedAt);
+        logText.textContent = (data.logTail && data.logTail.length) ? data.logTail.join("\n") : "No log entries yet.";
+        refreshText.textContent = `Last refreshed at ${refreshedAt.toLocaleTimeString("zh-CN", { hour12: false })}`;
+        metaText.textContent = `Auto refresh every 3 seconds • ${data.running ? "Monitor active" : "Monitor inactive"}`;
+      } catch (error) {
+        runningText.textContent = "Error";
+        runningPillText.textContent = "Could not load local snapshot";
+        runningPill.className = "pill warn";
+        logText.textContent = String(error);
+        refreshText.textContent = "Snapshot request failed.";
+        metaText.textContent = "Auto refresh every 3 seconds";
+      }
+    }
+
+    async function sendTestNotification() {
+      testButton.disabled = true;
+      testButton.textContent = "Sending...";
+
+      try {
+        const response = await fetch(`test-notification?ts=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({ error: "Unknown error" }));
+          throw new Error(payload.error || "Unknown error");
+        }
+
+        refreshText.textContent = "Test notification sent.";
+        await refresh();
+      } catch (error) {
+        refreshText.textContent = `Test notification failed: ${error.message}`;
+      } finally {
+        testButton.disabled = false;
+        testButton.textContent = "Send Test Notification";
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 3000);
+    testButton.addEventListener("click", sendTestNotification);
+  </script>
+</body>
+</html>

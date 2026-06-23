@@ -1,0 +1,7 @@
+outputs/bark-notify/CodexBark.config.json
+outputs/ntfy-notify/ntfy.config.json
+outputs/codex-task-monitor/CodexTaskMonitor.config.json
+outputs/codex-task-monitor/*.pid
+outputs/codex-task-monitor/*.log
+outputs/codex-task-monitor/state.json
+outputs/codex-task-monitor/status.json

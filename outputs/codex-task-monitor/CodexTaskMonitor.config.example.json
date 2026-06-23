@@ -1,0 +1,10 @@
+{
+  "sessionsRoot": "C:\\Users\\YourName\\.codex\\sessions",
+  "barkScriptPath": "C:\\path\\to\\repo\\outputs\\bark-notify\\Send-CodexBark.ps1",
+  "pollSeconds": 3,
+  "recentFilesToScan": 20,
+  "tailLinesPerFile": 120,
+  "statePath": "C:\\path\\to\\repo\\outputs\\codex-task-monitor\\state.json",
+  "pidPath": "C:\\path\\to\\repo\\outputs\\codex-task-monitor\\monitor.pid",
+  "logPath": "C:\\path\\to\\repo\\outputs\\codex-task-monitor\\monitor.log"
+}

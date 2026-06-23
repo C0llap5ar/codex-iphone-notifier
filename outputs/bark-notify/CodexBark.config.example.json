@@ -1,0 +1,9 @@
+{
+  "barkUrl": "https://api.day.app/your-device-key/",
+  "defaultTitle": "\u5df2\u5b8c\u6210\u4efb\u52a1",
+  "defaultSubtitle": "",
+  "defaultBody": "",
+  "defaultGroup": "codex",
+  "defaultSound": "alarm",
+  "defaultLevel": "timeSensitive"
+}

@@ -1,0 +1,13 @@
+{
+  "server": "https://ntfy.sh",
+  "topic": "codex-db7351737c8b429e9505",
+  "defaultStatus": "success",
+  "defaultTitle": "",
+  "defaultPriority": "",
+  "defaultTags": "",
+  "taskName": "General task",
+  "machineName": "",
+  "clickUrl": "",
+  "authToken": "",
+  "authTokenEnvVar": ""
+}
