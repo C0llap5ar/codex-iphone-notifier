@@ -6,7 +6,7 @@ This project watches local Codex session logs, detects `task_complete` events, a
 
 ## Preview
 
-![Codex Monitor GUI](docs/assets/gui-preview.png)
+![Codex Monitor GUI](docs/assets/gui-preview-clean.png)
 
 ![Codex Monitor preview](docs/assets/social-preview.png)
 
