@@ -40,7 +40,7 @@ if ((Test-Path -LiteralPath $barkConfigPath) -and -not $Force) {
 } else {
     $barkConfig = [ordered]@{
         barkUrl = $BarkUrl
-        defaultTitle = "已完成任务"
+        defaultTitle = Get-CodexMonitorDefaultNotificationTitle
         defaultSubtitle = ""
         defaultBody = ""
         defaultGroup = "codex"
@@ -75,3 +75,4 @@ $existingBarkConfig = Read-JsonFile -Path $barkConfigPath
 if (-not $BarkUrl -and (-not $existingBarkConfig -or -not $existingBarkConfig.barkUrl)) {
     Write-Warning "No Bark URL was provided. Add it to outputs\\bark-notify\\CodexBark.config.json before sending notifications."
 }
+

@@ -322,6 +322,11 @@ function Test-CodexMonitorDefaultNotificationTitleNeedsRepair {
         return $true
     }
 
+    $defaultTitle = Get-CodexMonitorDefaultNotificationTitle
+    if ($Title -eq $defaultTitle) {
+        return $false
+    }
+
     if ($Title -eq "Task done") {
         return $true
     }
@@ -330,7 +335,69 @@ function Test-CodexMonitorDefaultNotificationTitleNeedsRepair {
         return $true
     }
 
+    foreach ($suspiciousChar in @("鍔", "鎴", "宸", "浠", "诲")) {
+        if ($Title.Contains($suspiciousChar)) {
+            return $true
+        }
+    }
+
     return $false
+}
+
+function Test-CodexMonitorPlaceholderPath {
+    param(
+        [AllowEmptyString()]
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    $normalized = $Path.Replace("/", "\")
+    foreach ($pattern in @(
+        "*\Users\YourName\*",
+        "C:\path\to\*",
+        "*\path\to\repo\*",
+        "*\path\to\CodexMonitor\*"
+    )) {
+        if ($normalized -like $pattern) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Repair-CodexMonitorMonitorConfigPlaceholders {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
+
+    $repaired = ConvertTo-CodexMonitorWritableObject -InputObject $Config
+    $defaults = Get-CodexMonitorDefaultMonitorConfig
+    $changed = $false
+
+    foreach ($field in @("sessionsRoot", "barkScriptPath", "statePath", "pidPath", "logPath")) {
+        if (Test-CodexMonitorPlaceholderPath -Path ([string]$repaired[$field])) {
+            $repaired[$field] = $defaults[$field]
+            $changed = $true
+        }
+    }
+
+    foreach ($field in @("barkScriptPath", "statePath", "pidPath", "logPath")) {
+        $currentPath = [string]$repaired[$field]
+        if (-not [string]::IsNullOrWhiteSpace($currentPath) -and -not [System.IO.Path]::IsPathRooted($currentPath)) {
+            $repaired[$field] = $defaults[$field]
+            $changed = $true
+        }
+    }
+
+    [pscustomobject]@{
+        Config = $repaired
+        Changed = $changed
+    }
 }
 
 function Merge-CodexMonitorConfigWithDefaults {
@@ -466,6 +533,11 @@ function Get-CodexMonitorConfigFromPath {
     }
 
     $merged = Merge-CodexMonitorConfigWithDefaults -Config $config -Defaults (Get-CodexMonitorDefaultMonitorConfig)
+    $repair = Repair-CodexMonitorMonitorConfigPlaceholders -Config $merged.Config
+    if ($repair.Changed) {
+        $merged.Config = $repair.Config
+        $merged.Changed = $true
+    }
     Assert-CodexMonitorConfigValid -Config $merged.Config
 
     if ($merged.Changed -and -not $SkipWriteBack) {
@@ -1106,3 +1178,4 @@ function Uninstall-CodexMonitorStartup {
     & $script:CodexMonitorPaths.StartupUninstall -TaskName (Get-CodexMonitorStartupTaskName)
     Get-CodexMonitorStartupStatus
 }
+
