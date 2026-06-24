@@ -2,11 +2,17 @@
 
 Reliable iPhone notifications for Codex Desktop on Windows.
 
-This project watches local Codex session logs, detects `task_complete` events, and forwards them to Bark on iPhone. It also includes a small desktop GUI and local dashboard so you can see monitor state, recent logs, and send a test notification without touching Codex internals.
+This project watches local Codex session logs, detects `task_complete` events, and forwards them to Bark on iPhone. It also includes a desktop GUI and local dashboard so you can inspect monitor state, recent logs, and send a test notification without touching Codex internals.
 
 ## Preview
 
+![Codex Monitor preview](docs/assets/social-preview.png)
+
+Desktop monitor and dashboard preview:
+
 ![Dashboard preview](docs/assets/dashboard-preview.png)
+
+Quick setup flow:
 
 ![Quick start](docs/assets/quickstart-card.png)
 
@@ -21,7 +27,7 @@ If you want Codex to finish a task and quietly ping your phone, this is the prac
 - Watches `~/.codex/sessions` for new `task_complete` events
 - Sends Bark push notifications to iPhone
 - Runs a local monitor and optional local dashboard
-- Includes a desktop GUI for daily use
+- Includes a Windows desktop GUI for daily use
 - Supports test notifications, diagnostics, startup install, and local status recovery
 
 ## Recommended way to use it
@@ -78,6 +84,7 @@ The repository also includes a WPF-based desktop GUI with:
 
 For the current Windows packaging pass, the most practical GUI build is the `ps2exe` release in `dist/CodexMonitorGui-ps2exe/`.
 For GitHub releases, ship the packaged archive asset rather than committing local `dist/` output.
+The GUI is intended to be the default day-to-day entry point for this project on Windows.
 
 ## Project layout
 
