@@ -2,7 +2,7 @@
 param(
     [switch]$SendNotification,
     [switch]$StartDashboard,
-    [int]$DashboardPort = 8754
+    [Nullable[int]]$DashboardPort
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,14 +10,11 @@ $ErrorActionPreference = "Stop"
 function Read-JsonFile {
     param([string]$Path)
 
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Read-CodexMonitorJsonFile -Path $Path -Description "test config file"
 }
 
 $repoRoot = $PSScriptRoot
+$coreScriptPath = Join-Path $repoRoot "CodexMonitor.Core.ps1"
 $barkConfigPath = Join-Path $repoRoot "outputs\bark-notify\CodexBark.config.json"
 $monitorConfigPath = Join-Path $repoRoot "outputs\codex-task-monitor\CodexTaskMonitor.config.json"
 $monitorStatusScript = Join-Path $repoRoot "outputs\codex-task-monitor\Get-CodexTaskMonitorStatus.ps1"
@@ -25,6 +22,9 @@ $monitorStartScript = Join-Path $repoRoot "outputs\codex-task-monitor\Start-Code
 $dashboardStartScript = Join-Path $repoRoot "outputs\codex-task-monitor\Start-CodexTaskMonitorDashboard.ps1"
 $snapshotScript = Join-Path $repoRoot "outputs\codex-task-monitor\Export-CodexTaskMonitorSnapshot.ps1"
 $barkScript = Join-Path $repoRoot "outputs\bark-notify\Send-CodexBark.ps1"
+
+. $coreScriptPath
+$DashboardPort = Resolve-CodexMonitorDashboardPort -Port $DashboardPort
 
 $barkConfig = Read-JsonFile -Path $barkConfigPath
 $monitorConfig = Read-JsonFile -Path $monitorConfigPath

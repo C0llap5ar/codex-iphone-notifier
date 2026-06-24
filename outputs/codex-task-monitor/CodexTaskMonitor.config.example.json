@@ -1,6 +1,7 @@
 {
   "sessionsRoot": "C:\\Users\\YourName\\.codex\\sessions",
   "barkScriptPath": "C:\\path\\to\\repo\\outputs\\bark-notify\\Send-CodexBark.ps1",
+  "dashboardPort": 8754,
   "pollSeconds": 3,
   "recentFilesToScan": 20,
   "tailLinesPerFile": 120,

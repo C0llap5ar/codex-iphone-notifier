@@ -9,7 +9,9 @@ if (-not $ConfigPath) {
     $ConfigPath = Join-Path $PSScriptRoot "CodexTaskMonitor.config.json"
 }
 
-$config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+$coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+. $coreScriptPath
+$config = Get-CodexMonitorConfigFromPath -Path $ConfigPath
 
 if (-not (Test-Path -LiteralPath $config.pidPath)) {
     Write-Output "Monitor is not running."
@@ -28,7 +30,7 @@ if ($process) {
 }
 
 if (Test-Path -LiteralPath $config.pidPath) {
-    Remove-Item -LiteralPath $config.pidPath -Force
+    Remove-Item -LiteralPath $config.pidPath -Force -ErrorAction SilentlyContinue
 }
 
 Write-Output "Monitor stopped."

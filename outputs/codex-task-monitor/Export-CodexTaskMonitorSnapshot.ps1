@@ -69,10 +69,17 @@ if (-not $OutputPath) {
     $OutputPath = Join-Path $PSScriptRoot "status.json"
 }
 
-$config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+$coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+. $coreScriptPath
+$config = Get-CodexMonitorConfigFromPath -Path $ConfigPath
 $state = $null
 if (Test-Path -LiteralPath $config.statePath) {
-    $state = Get-Content -LiteralPath $config.statePath -Raw | ConvertFrom-Json
+    try {
+        $state = Read-CodexMonitorJsonFile -Path $config.statePath -Description "monitor state file" -RetryOnInvalidJson
+    }
+    catch {
+        $state = $null
+    }
 }
 
 $pidValue = $null
@@ -86,7 +93,12 @@ if (Test-Path -LiteralPath $config.pidPath) {
 
 $logTail = @()
 if (Test-Path -LiteralPath $config.logPath) {
-    $logTail = @(Get-Content -LiteralPath $config.logPath -Tail 20 | Convert-ToStringArray)
+    try {
+        $logTail = @(Read-CodexMonitorLogTail -Path $config.logPath -TailLines 20 | Convert-ToStringArray)
+    }
+    catch {
+        $logTail = @()
+    }
 }
 
 $notifiedTurnIds = @()
@@ -112,5 +124,6 @@ $payload = [pscustomobject]@{
     logTail = $logTail
 }
 
-$payload | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $OutputPath -Encoding UTF8
+$json = $payload | ConvertTo-Json -Depth 6
+Write-CodexMonitorFileAtomically -Path $OutputPath -Content $json
 Write-Output ("Wrote snapshot to {0}" -f $OutputPath)

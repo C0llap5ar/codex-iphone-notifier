@@ -14,7 +14,9 @@ $snapshotScriptPath = Join-Path $PSScriptRoot "Export-CodexTaskMonitorSnapshot.p
 $dashboardPath = Join-Path $PSScriptRoot "dashboard.html"
 $statusPath = Join-Path $PSScriptRoot "status.json"
 $barkScriptPath = $null
-$monitorConfig = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+$coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+. $coreScriptPath
+$monitorConfig = Get-CodexMonitorConfigFromPath -Path $ConfigPath
 $barkScriptPath = $monitorConfig.barkScriptPath
 
 $listener = [System.Net.HttpListener]::new()

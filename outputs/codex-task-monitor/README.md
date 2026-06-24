@@ -5,6 +5,8 @@ This monitor watches local Codex session logs and sends a Bark notification when
 Scripts:
 
 - `CodexTaskMonitor.config.example.json`: template config for GitHub and new setups
+- `..\..\CodexMonitor.ps1`: one-console entry point for daily use
+- `..\..\CodexMonitor.cmd`: double-click Windows launcher for the console menu
 - `Start-CodexTaskMonitor.ps1`: start the monitor in the background
 - `Stop-CodexTaskMonitor.ps1`: stop the monitor
 - `Get-CodexTaskMonitorStatus.ps1`: inspect whether it is running
@@ -22,25 +24,25 @@ powershell -ExecutionPolicy Bypass -File ..\..\Setup-CodexMonitor.ps1 -BarkUrl "
 Start:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Start-CodexTaskMonitor.ps1
+powershell -ExecutionPolicy Bypass -File ..\..\CodexMonitor.ps1 -Action start
 ```
 
 Stop:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Stop-CodexTaskMonitor.ps1
+powershell -ExecutionPolicy Bypass -File ..\..\CodexMonitor.ps1 -Action stop
 ```
 
 Status:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Get-CodexTaskMonitorStatus.ps1
+powershell -ExecutionPolicy Bypass -File ..\..\CodexMonitor.ps1 -Action status
 ```
 
 Dashboard:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\Start-CodexTaskMonitorDashboard.ps1
+powershell -ExecutionPolicy Bypass -File ..\..\CodexMonitor.ps1 -Action open
 ```
 
 Then open:

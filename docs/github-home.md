@@ -2,11 +2,11 @@
 
 ## Repository description
 
-Windows-first local monitor for Codex Desktop that sends iPhone push notifications through Bark when tasks complete.
+Windows-first Codex Desktop monitor that sends task completion notifications to iPhone through Bark.
 
 ## Short pitch
 
-Codex iPhone Notifier gives Codex Desktop a reliable "task finished" push path on Windows by watching local session logs and forwarding completion events to Bark on iPhone.
+Codex iPhone Notifier watches local Codex session logs, detects `task_complete` events, and forwards them to Bark on iPhone with a practical Windows desktop GUI, tray app behavior, and local dashboard.
 
 ## Suggested topics
 
@@ -17,7 +17,7 @@ Codex iPhone Notifier gives Codex Desktop a reliable "task finished" push path o
 - `notifications`
 - `powershell`
 - `windows`
-- `automation`
+- `desktop-app`
 - `developer-tools`
 
 ## Suggested social preview headline
@@ -26,4 +26,4 @@ Reliable iPhone notifications for Codex Desktop on Windows
 
 ## Suggested social preview subtext
 
-Watch local Codex session logs, forward `task_complete` events to Bark, and verify the pipeline with a lightweight dashboard.
+Watch local Codex session logs, send Bark pushes on `task_complete`, and manage the whole pipeline from a lightweight Windows desktop GUI.

@@ -8,11 +8,7 @@ $ErrorActionPreference = "Stop"
 function Read-JsonFile {
     param([string]$Path)
 
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Read-CodexMonitorJsonFile -Path $Path -Description "monitor state file" -RetryOnInvalidJson
 }
 
 function Write-JsonFile {
@@ -21,12 +17,8 @@ function Write-JsonFile {
         [object]$Value
     )
 
-    $directory = Split-Path -Parent $Path
-    if ($directory -and -not (Test-Path -LiteralPath $directory)) {
-        New-Item -ItemType Directory -Path $directory | Out-Null
-    }
-
-    $Value | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $Path -Encoding UTF8
+    $json = $Value | ConvertTo-Json -Depth 6
+    Write-CodexMonitorFileAtomically -Path $Path -Content $json
 }
 
 function Write-MonitorLog {
@@ -36,7 +28,21 @@ function Write-MonitorLog {
     )
 
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Add-Content -LiteralPath $Config.logPath -Value ("[{0}] {1}" -f $timestamp, $Message)
+    $directory = Split-Path -Parent $Config.logPath
+    if ($directory -and -not (Test-Path -LiteralPath $directory)) {
+        New-Item -ItemType Directory -Path $directory | Out-Null
+    }
+
+    $line = "[{0}] {1}{2}" -f $timestamp, $Message, [Environment]::NewLine
+    $utf8 = [System.Text.UTF8Encoding]::new($false)
+    $bytes = $utf8.GetBytes($line)
+    $stream = [System.IO.File]::Open($Config.logPath, [System.IO.FileMode]::Append, [System.IO.FileAccess]::Write, [System.IO.FileShare]::ReadWrite)
+    try {
+        $stream.Write($bytes, 0, $bytes.Length)
+    }
+    finally {
+        $stream.Dispose()
+    }
 }
 
 function Get-RecentSessionFiles {
@@ -57,7 +63,30 @@ function Get-TaskCompleteEvents {
     $events = @()
 
     foreach ($file in Get-RecentSessionFiles -Config $Config) {
-        $lines = Get-Content -LiteralPath $file.FullName -Tail ([int]$Config.tailLinesPerFile)
+        try {
+            $content = Read-CodexMonitorTextFile -Path $file.FullName -Description "session file" -MaxAttempts 3 -RetryDelayMs 60
+        }
+        catch {
+            # Codex can still be appending to the newest session file. Skip it for
+            # this polling pass instead of killing the whole background monitor.
+            continue
+        }
+
+        if ([string]::IsNullOrEmpty($content)) {
+            continue
+        }
+
+        $normalized = $content -replace "`r`n", "`n"
+        $allLines = @($normalized -split "`n")
+        if ($allLines.Count -gt 0 -and $allLines[-1] -eq "") {
+            $allLines = @($allLines | Select-Object -SkipLast 1)
+        }
+        if ($allLines.Count -gt [int]$Config.tailLinesPerFile) {
+            $lines = @($allLines | Select-Object -Last ([int]$Config.tailLinesPerFile))
+        }
+        else {
+            $lines = @($allLines)
+        }
         foreach ($line in $lines) {
             if ($line -notmatch '"type":"task_complete"') {
                 continue
@@ -110,10 +139,9 @@ if (-not $ConfigPath) {
     $ConfigPath = Join-Path $PSScriptRoot "CodexTaskMonitor.config.json"
 }
 
-$config = Read-JsonFile -Path $ConfigPath
-if ($null -eq $config) {
-    throw "Monitor config not found: $ConfigPath"
-}
+$coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+. $coreScriptPath
+$config = Get-CodexMonitorConfigFromPath -Path $ConfigPath
 
 $pidDirectory = Split-Path -Parent $config.pidPath
 if ($pidDirectory -and -not (Test-Path -LiteralPath $pidDirectory)) {

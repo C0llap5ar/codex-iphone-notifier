@@ -2,7 +2,7 @@
 param(
     [string]$TaskName = "CodexTaskMonitor",
     [switch]$IncludeDashboard,
-    [int]$DashboardPort = 8754
+    [Nullable[int]]$DashboardPort
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,6 +10,10 @@ $ErrorActionPreference = "Stop"
 $repoRoot = $PSScriptRoot
 $monitorStartScript = Join-Path $repoRoot "outputs\codex-task-monitor\Start-CodexTaskMonitor.ps1"
 $dashboardStartScript = Join-Path $repoRoot "outputs\codex-task-monitor\Start-CodexTaskMonitorDashboard.ps1"
+$coreScript = Join-Path $repoRoot "CodexMonitor.Core.ps1"
+
+. $coreScript
+$DashboardPort = Resolve-CodexMonitorDashboardPort -Port $DashboardPort
 
 if (-not (Test-Path -LiteralPath $monitorStartScript)) {
     throw "Monitor start script not found: $monitorStartScript"

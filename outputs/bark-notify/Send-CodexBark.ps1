@@ -32,7 +32,9 @@ if (-not $ConfigPath) {
 
 $config = $null
 if (Test-Path -LiteralPath $ConfigPath) {
-    $config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+    $coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+    . $coreScriptPath
+    $config = Get-CodexBarkConfigFromPath -Path $ConfigPath
 }
 
 $stdinText = ""
@@ -54,12 +56,19 @@ if (-not $resolvedBarkUrl) {
     throw "No Bark URL configured. Add `"barkUrl`" to CodexBark.config.json or pass -BarkUrl."
 }
 
-$resolvedTitle = if ($Title) { $Title } else { Get-ConfigValue -Config $config -Name "defaultTitle" -Fallback "Task done" }
+$defaultTitle = if (Get-Command Get-CodexMonitorDefaultNotificationTitle -ErrorAction SilentlyContinue) {
+    Get-CodexMonitorDefaultNotificationTitle
+}
+else {
+    [string]::Concat([char]0x5DF2, [char]0x5B8C, [char]0x6210, [char]0x4EFB, [char]0x52A1)
+}
+
+$resolvedTitle = if ($Title) { $Title } else { Get-ConfigValue -Config $config -Name "defaultTitle" -Fallback $defaultTitle }
 $resolvedSubtitle = if ($Subtitle) { $Subtitle } else { Get-ConfigValue -Config $config -Name "defaultSubtitle" }
 $resolvedBody = if ($Body) { $Body } else { Get-ConfigValue -Config $config -Name "defaultBody" }
 
 if ($isHookInvocation) {
-    $resolvedTitle = Get-ConfigValue -Config $config -Name "defaultTitle" -Fallback "Task done"
+    $resolvedTitle = Get-ConfigValue -Config $config -Name "defaultTitle" -Fallback $defaultTitle
     $resolvedSubtitle = Get-ConfigValue -Config $config -Name "defaultSubtitle"
     $resolvedBody = Get-ConfigValue -Config $config -Name "defaultBody"
 }
@@ -80,7 +89,10 @@ if ($resolvedBody) {
 }
 
 $uri = $resolvedBarkUrl.TrimEnd("/") + "/"
-$response = Invoke-RestMethod -Method Post -Uri $uri -Body $payload
+$jsonBody = $payload | ConvertTo-Json -Depth 4 -Compress
+$utf8 = [System.Text.UTF8Encoding]::new($false)
+$bodyBytes = $utf8.GetBytes($jsonBody)
+$response = Invoke-RestMethod -Method Post -Uri $uri -ContentType "application/json; charset=utf-8" -Body $bodyBytes
 
 if ($null -ne $response -and $null -ne $response.code -and $response.code -ne 200) {
     throw "Bark push failed: $($response.message)"

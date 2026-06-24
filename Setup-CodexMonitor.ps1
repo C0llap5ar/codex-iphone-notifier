@@ -2,6 +2,7 @@
 param(
     [string]$BarkUrl,
     [string]$SessionsRoot = (Join-Path $HOME ".codex\sessions"),
+    [int]$DashboardPort = 8754,
     [int]$PollSeconds = 3,
     [int]$RecentFilesToScan = 20,
     [int]$TailLinesPerFile = 120,
@@ -13,11 +14,7 @@ $ErrorActionPreference = "Stop"
 function Read-JsonFile {
     param([string]$Path)
 
-    if (-not (Test-Path -LiteralPath $Path)) {
-        return $null
-    }
-
-    Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Read-CodexMonitorJsonFile -Path $Path -Description "setup config file"
 }
 
 function Write-JsonFile {
@@ -26,15 +23,12 @@ function Write-JsonFile {
         [object]$Value
     )
 
-    $parent = Split-Path -Parent $Path
-    if ($parent -and -not (Test-Path -LiteralPath $parent)) {
-        New-Item -ItemType Directory -Path $parent | Out-Null
-    }
-
-    $Value | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $Path -Encoding UTF8
+    Write-CodexMonitorJsonFile -Path $Path -Value $Value
 }
 
 $repoRoot = $PSScriptRoot
+$coreScriptPath = Join-Path $repoRoot "CodexMonitor.Core.ps1"
+. $coreScriptPath
 $barkDir = Join-Path $repoRoot "outputs\bark-notify"
 $monitorDir = Join-Path $repoRoot "outputs\codex-task-monitor"
 
@@ -46,7 +40,7 @@ if ((Test-Path -LiteralPath $barkConfigPath) -and -not $Force) {
 } else {
     $barkConfig = [ordered]@{
         barkUrl = $BarkUrl
-        defaultTitle = "\u5df2\u5b8c\u6210\u4efb\u52a1"
+        defaultTitle = "已完成任务"
         defaultSubtitle = ""
         defaultBody = ""
         defaultGroup = "codex"
@@ -64,6 +58,7 @@ if ((Test-Path -LiteralPath $monitorConfigPath) -and -not $Force) {
     $monitorConfig = [ordered]@{
         sessionsRoot = $SessionsRoot
         barkScriptPath = (Join-Path $barkDir "Send-CodexBark.ps1")
+        dashboardPort = $DashboardPort
         pollSeconds = $PollSeconds
         recentFilesToScan = $RecentFilesToScan
         tailLinesPerFile = $TailLinesPerFile

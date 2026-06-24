@@ -5,3 +5,6 @@ outputs/codex-task-monitor/*.pid
 outputs/codex-task-monitor/*.log
 outputs/codex-task-monitor/state.json
 outputs/codex-task-monitor/status.json
+outputs/codex-task-monitor/archive/
+dist/
+work/

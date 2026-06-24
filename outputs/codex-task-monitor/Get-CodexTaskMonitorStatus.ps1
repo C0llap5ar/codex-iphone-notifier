@@ -9,24 +9,24 @@ if (-not $ConfigPath) {
     $ConfigPath = Join-Path $PSScriptRoot "CodexTaskMonitor.config.json"
 }
 
-$config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+$coreScriptPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "CodexMonitor.Core.ps1"
+. $coreScriptPath
+$config = Get-CodexMonitorConfigFromPath -Path $ConfigPath
 $state = $null
 if (Test-Path -LiteralPath $config.statePath) {
-    $state = Get-Content -LiteralPath $config.statePath -Raw | ConvertFrom-Json
-}
-
-$pidValue = $null
-$running = $false
-if (Test-Path -LiteralPath $config.pidPath) {
-    $pidValue = (Get-Content -LiteralPath $config.pidPath -Raw).Trim()
-    if ($pidValue) {
-        $running = $null -ne (Get-Process -Id ([int]$pidValue) -ErrorAction SilentlyContinue)
+    try {
+        $state = Read-CodexMonitorJsonFile -Path $config.statePath -Description "monitor state file" -RetryOnInvalidJson
+    }
+    catch {
+        $state = $null
     }
 }
 
+$monitorState = Get-CodexMonitorProcessState -PidPath $config.pidPath
+
 [pscustomobject]@{
-    running = $running
-    pid = $pidValue
+    running = $monitorState.running
+    pid = $monitorState.pid
     lastSeenCompletedAt = if ($state) { $state.lastSeenCompletedAt } else { $null }
     statePath = $config.statePath
     logPath = $config.logPath

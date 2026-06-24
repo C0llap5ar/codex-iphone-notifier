@@ -1,12 +1,8 @@
 # Codex iPhone Notifier
 
-A small Windows-first toolkit that watches Codex Desktop session logs and pushes task completion notifications to your iPhone.
+Reliable iPhone notifications for Codex Desktop on Windows.
 
-The current default path uses Bark on iPhone because it was more reliable than `ntfy` on iOS in real use.
-
-This repository is currently optimized for a practical Windows-first public release: stable local behavior first, structural cleanup second.
-
-If you want Codex to finish a task and immediately ping your phone, this project is the simplest reliable path from local Codex Desktop activity to iPhone push notifications.
+This project watches local Codex session logs, detects `task_complete` events, and forwards them to Bark on iPhone. It also includes a small desktop GUI and local dashboard so you can see monitor state, recent logs, and send a test notification without touching Codex internals.
 
 ## Preview
 
@@ -14,78 +10,100 @@ If you want Codex to finish a task and immediately ping your phone, this project
 
 ![Quick start](docs/assets/quickstart-card.png)
 
+## Why this exists
+
+Codex Desktop notification and hook behavior can be inconsistent across real Windows setups. This project avoids that path entirely and instead watches local `~/.codex/sessions` activity directly.
+
+If you want Codex to finish a task and quietly ping your phone, this is the practical Windows-first path.
+
 ## What it does
 
 - Watches `~/.codex/sessions` for new `task_complete` events
-- Sends a Bark push when a Codex task finishes
-- Exposes a small local dashboard at `http://127.0.0.1:8754/`
-- Runs fully outside Codex Desktop hooks, which makes it more stable on Desktop builds where `notify` or `hooks.json` can be flaky
+- Sends Bark push notifications to iPhone
+- Runs a local monitor and optional local dashboard
+- Includes a desktop GUI for daily use
+- Supports test notifications, diagnostics, startup install, and local status recovery
 
-## Why it is useful
+## Recommended way to use it
 
-- You do not need to keep staring at Codex while a task runs
-- You get a practical fallback when built-in desktop notifications are unreliable
-- You can verify the whole pipeline locally with a dashboard and a test notification button
+If you just want the desktop app:
 
-## Project layout
+1. Download the release package.
+2. Extract it.
+3. Run `CodexMonitorGui.exe`.
+4. Paste your Bark URL into the GUI and save.
 
-- `outputs/bark-notify`: Bark sender script and Bark config template
-- `outputs/codex-task-monitor`: background monitor, local dashboard, and monitor config template
-- `outputs/ntfy-notify`: older `ntfy` path kept as reference
-- `Setup-CodexMonitor.ps1`: creates local machine config files from templates
-- `Install-CodexMonitorStartup.ps1`: installs a Windows logon task for the monitor
-- `Uninstall-CodexMonitorStartup.ps1`: removes the Windows logon task
-- `Test-CodexMonitor.ps1`: runs a quick local health check
+Recommended release asset:
 
-## Why this approach
+- `CodexMonitorGui-ps2exe-win64.zip`
 
-- Codex Desktop hooks were not reliable enough in real use on this setup
-- Bark on iPhone delivered more reliably than `ntfy` for the target workflow
-- A local log-watching monitor keeps the system understandable and easy to debug
+## Quick start from source
 
-Architecture notes live in [docs/architecture.md](C:/Users/ASD/Documents/Codex/2026-06-23/you/docs/architecture.md).
-
-## Quick start
-
-1. Install the Bark app on iPhone and get your device URL.
+1. Install Bark on iPhone and copy your device URL.
 2. Run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\Setup-CodexMonitor.ps1 -BarkUrl "https://api.day.app/your-device-key/"
 ```
 
-3. Start the monitor:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\outputs\codex-task-monitor\Start-CodexTaskMonitor.ps1
-```
-
-4. Start the dashboard:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\outputs\codex-task-monitor\Start-CodexTaskMonitorDashboard.ps1
-```
-
-5. Open:
-
-`http://127.0.0.1:8754/`
-
-## Nice extras
-
-Install monitor autostart on Windows logon:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\Install-CodexMonitorStartup.ps1
-```
-
-Run a local health check:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\Test-CodexMonitor.ps1
-```
-
-Run a health check and send a real Bark test:
+3. Run a local health check:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\Test-CodexMonitor.ps1 -SendNotification -StartDashboard
 ```
+
+4. Start the monitor:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\CodexMonitor.ps1 -Action start
+```
+
+5. Open the dashboard:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\CodexMonitor.ps1 -Action open
+```
+
+## Desktop GUI
+
+The repository also includes a WPF-based desktop GUI with:
+
+- Monitor and dashboard start/stop/restart controls
+- Bark URL and dashboard port settings
+- Recent log view
+- Error and diagnostic summaries
+- Startup toggle
+- Tray behavior
+- Local cleanup and rebuild action
+
+For the current Windows packaging pass, the most practical GUI build is the `ps2exe` release in `dist/CodexMonitorGui-ps2exe/`.
+For GitHub releases, ship the packaged archive asset rather than committing local `dist/` output.
+
+## Project layout
+
+- `outputs/bark-notify`: Bark sender script and Bark config
+- `outputs/codex-task-monitor`: background monitor, dashboard, and monitor state files
+- `outputs/ntfy-notify`: older `ntfy` path kept as reference
+- `locales/`: GUI language files
+- `docs/`: architecture notes, release notes, and preview assets
+
+## Useful scripts
+
+- `Setup-CodexMonitor.ps1`: generate local config files
+- `Test-CodexMonitor.ps1`: run a local health check
+- `Install-CodexMonitorStartup.ps1`: install Windows logon startup
+- `Uninstall-CodexMonitorStartup.ps1`: remove Windows logon startup
+- `Restore-CodexMonitorWindow.ps1`: pull the GUI window back to the foreground if needed
+
+## Notes
+
+- This is currently optimized for Windows-first practical use.
+- Bark is the default iPhone path because it proved more reliable than `ntfy` on this setup.
+- The runtime layout still uses `outputs/` to avoid breaking a known-good working local setup during the first public release.
+- Release packages should contain only template config and no local Bark URL, PID, log, or state files.
+
+Architecture notes live in [docs/architecture.md](/C:/Users/ASD/Documents/Codex/2026-06-23/you/docs/architecture.md).
+
+## License
+
+MIT
